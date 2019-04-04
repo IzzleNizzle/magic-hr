@@ -14,7 +14,6 @@ import pointBot from '../images/pointBot.png';
 import superBot from '../images/superBot.png';
 import wizBot from '../images/wizBot.png';
 
-// let testData = [{ employeeId: "werwer", firstName: "werq", lastName: "werqwer", email: "werq", phoneNumber: "qwer", salary: "qwer" }]
 class Home extends Component {
   state = {
     employees: [],
@@ -27,7 +26,6 @@ class Home extends Component {
       salary: '',
     },
     editEmployeeData: {
-      // id: '',
       employeeId: '',
       firstName: '',
       lastName: '',
@@ -58,8 +56,6 @@ class Home extends Component {
 
   handleInputChange = event => {
     const { name, value } = event.target;
-    console.log(event.target.checkValidity());
-
     // I wish react would fix this...can't extract from event.target
     let workAround = event.target.getAttribute('data')
     this.setState((prevState => {
@@ -73,8 +69,6 @@ class Home extends Component {
 
   validateForm = (event, type) => {
     event.preventDefault();
-    console.log(event.target.parentElement.getAttribute('data'));
-    console.log(event.target.parentElement.checkValidity());
     // Check validity of form before continuing
     if (event.target.parentElement.checkValidity()) {
       if (type === 'add') {
@@ -85,13 +79,12 @@ class Home extends Component {
         // edit
         this.state.editEmployee()
       }
+      // Clear validation
       this.clearValidation(type)
     } else {
+      // Some pieces of information missing, adding validation requirement
       this.needsValidation(type)
-
     }
-    // console.log(event.target.previousSibling.children[1].getAttribute('data'))
-    // console.log(event.target.parentElement.parentElement.checkValidity());
   }
 
   needsValidation = type => {
@@ -122,6 +115,7 @@ class Home extends Component {
   }
 
   getEmployees = () => {
+    // Gets all active employees in DB and adds to state
     API.getEmployees()
       .then(res =>
         this.setState({
@@ -139,15 +133,12 @@ class Home extends Component {
 
   handleShow = id => {
     // Show modal as well as populate editEmployeeData fields from row clicked
-    console.log(this.state)
-    console.log(id)
     this.setState({
       showModal: true,
       editEmployee: () => {
         this.updateEmployee(id)
       },
       editEmployeeData: {
-        // id: this.state.employees[id].id,
         employeeId: this.state.employees[id].employeeId,
         firstName: this.state.employees[id].firstName,
         lastName: this.state.employees[id].lastName,
@@ -163,7 +154,6 @@ class Home extends Component {
     this.setState({
       showModal: false,
       editEmployeeData: {
-        // id: '',
         employeeId: '',
         firstName: '',
         lastName: '',
@@ -179,12 +169,7 @@ class Home extends Component {
     this.setState({
       showDeleteModal: true,
       deleteEmployee: () => {
-        console.log(this.state.employees[id]._id)        // Remove employee from database
-        // API.deleteEmployee(this.state.employees[id]._id)
-        //   .then(res => {
-        //     this.getEmployees()
-        //   })
-        //   .catch(err => console.log(err))
+        // Remove employee from database
         this.deleteEmployee(id)
         // Hiding modal this way to avoid showing superBot img
         this.setState({ showDeleteModal: false })
@@ -204,11 +189,7 @@ class Home extends Component {
       })
   }
 
-
-
   updateEmployee = id => {
-    // validate form before adding
-    // if (event.target.parentElement.checkValidity()) {
     console.log(this.state.employees[id]._id)
     API.updateEmployee(this.state.employees[id]._id, this.state.editEmployeeData)
       .then(res => {
